@@ -2,15 +2,15 @@
  * :main:CPriorityQueue
  *
  * Ruby extension implementing a priority queue
- * 
+ *
  * This is a fibonacci heap priority queue implementation.
  *
  * (c) 2005 Brian Schröder
- * 
+ *
  * Please submit bugreports to priority_queue@brian-schroeder.de
  *
  * This extension is under the same license as ruby.
- * 
+ *
  * Do not hold me reliable for anything that happens to you, your programs or
  * anything else because of this extension. It worked for me, but there is no
  * guarantee it will work for you.
@@ -63,7 +63,7 @@ priority_node* create_priority_node(VALUE object, VALUE priority) {
   result->child = NULL;
   result->left = result;
   result->right = result;
-  result->mark = false;  
+  result->mark = false;
   return result;
 }
 
@@ -87,7 +87,7 @@ void priority_node_free_recursively(priority_node* n) {
 }
 
 // link two binomial heaps
-static 
+static
 priority_node* link_nodes(priority_queue* q, priority_node* b1, priority_node* b2) {
   if (q->compare_function(b2->priority, b1->priority) < 0)
     return link_nodes(q, b2, b1);
@@ -156,7 +156,7 @@ priority_queue* meld_queue(priority_queue* q1, priority_node* q2, unsigned int l
     q1->length = length_q2;
   } else {
     priority_node* r1 = q1->rootlist->left;
-    priority_node* r2 = q2->left;  
+    priority_node* r2 = q2->left;
 
     q1->rootlist->left = r2;
     r2->right = q1->rootlist;
@@ -184,8 +184,8 @@ priority_node* priority_queue_add_node(priority_queue* q, VALUE object, VALUE pr
 }
 
 // Does not change length
-static 
-priority_node* delete_first(priority_queue* const q) {  
+static
+priority_node* delete_first(priority_queue* const q) {
   if (q->rootlist) {
     priority_node* result = q->rootlist;
     if (result == result->right)
@@ -209,7 +209,7 @@ void assert_pointers_correct(priority_node* n) {
 
   priority_node *n1 = n->right;
   while(n != n1) {
-    if (n1->child && (n1 != n1->child->parent)) 
+    if (n1->child && (n1 != n1->child->parent))
       printf("Eltern-Kind Zeiger inkorrekt: %p\n", n);
 
     if (n1 != n1->right->left)
@@ -224,7 +224,7 @@ void assert_pointers_correct(priority_node* n) {
 }
 
 // Consolidate a queue in amortized O(log n)
-static 
+static
 void consolidate_queue(priority_queue* const q) {
   unsigned int array_size = 2 * log(q->length) / log(2) + 1;
   priority_node* tree_by_degree[array_size];
@@ -242,10 +242,10 @@ void consolidate_queue(priority_queue* const q) {
     tree_by_degree[n->degree] = n;
   }
 
-  // Find minimum value in O(log n) 
+  // Find minimum value in O(log n)
   q->rootlist = NULL;
   q->min = NULL;
-  for (i=0; i<array_size; i++) {    
+  for (i=0; i<array_size; i++) {
     if (tree_by_degree[i] != NULL) {
       insert_tree(q, tree_by_degree[i]);
     }
@@ -312,13 +312,13 @@ priority_node* priority_queue_delete_min(priority_queue* q) {
 static
   priority_queue* cut_node(priority_queue* q, priority_node* n) {
     if (!n->parent)
-      return q;  
+      return q;
     n->parent->degree--;
     if (n->parent->child == n) {
       if (n->right == n)
 	n->parent->child = NULL;
       else
-	n->parent->child = n->right;  
+	n->parent->child = n->right;
     }
     n->parent = NULL;
     n->right->left = n->left;
@@ -359,7 +359,7 @@ priority_queue* priority_queue_delete(priority_queue* q, priority_node* n) {
       priority_node* n1 = n->right;
       q->min = n1;
       do {
-	if (q->compare_function(n1->priority, q->min->priority) <= 0) 
+	if (q->compare_function(n1->priority, q->min->priority) <= 0)
 	  q->min = n1;
 	n1 = n1->right;
       } while(n1 != n);
@@ -380,7 +380,7 @@ priority_queue* priority_queue_change_priority(priority_queue* q, priority_node*
     n->priority = priority;
     meld_queue(q, n, 1);
     return q;
-  }    
+  }
   n->priority = priority;
   if (q->compare_function(n->priority, q->min->priority) < 0)
     q->min = n;
@@ -406,7 +406,7 @@ _Bool priority_queue_empty(priority_queue *q) {
 }
 
 // change the priority of a priority_node and restructure the queue
-priority_queue* priority_queue_each_node(priority_queue* q, priority_node* n, 
+priority_queue* priority_queue_each_node(priority_queue* q, priority_node* n,
     void (*each)(priority_queue* q_, priority_node* n_, void* args), void* arguments) {
   priority_node* end = n;
   do {
@@ -421,7 +421,7 @@ priority_queue* priority_queue_each_node(priority_queue* q, priority_node* n,
   return q;
 }
 
-priority_queue* priority_queue_each(priority_queue* q,  
+priority_queue* priority_queue_each(priority_queue* q,
     void (*each)(priority_queue* q, priority_node* n, void* args), void* arguments) {
   if (q->rootlist)
     priority_queue_each_node(q, q->rootlist, each, arguments);
@@ -436,7 +436,7 @@ static int id_format;
 static int id_display;
 
 priority_queue* get_pq_from_value(VALUE self) {
-  priority_queue *q; 
+  priority_queue *q;
   Data_Get_Struct(self, priority_queue, q);
   return q;
 }
@@ -465,7 +465,7 @@ void pq_mark_recursive(priority_node* n) {
 }
 
 static
-void pq_mark(void *q) {  
+void pq_mark(void *q) {
   priority_node* n1 = ((priority_queue*) q)->rootlist;
   if (!n1)
     return;
@@ -476,7 +476,7 @@ void pq_mark(void *q) {
   } while (n1 != n2);
 }
 
-static 
+static
 VALUE pq_alloc(VALUE klass) {
   priority_queue *q;
   VALUE object;
@@ -516,7 +516,7 @@ VALUE pq_push(VALUE self, VALUE object, VALUE priority) {
 
 /* call-seq:
  *     min -> [object, priority]
- *     
+ *
  * Return the pair [object, priority] with minimal priority or nil when the
  * queue is empty.
  *
@@ -542,7 +542,7 @@ VALUE pq_min(VALUE self) {
 
 /* call-seq:
  *     min_key -> object
- *     
+ *
  * Return the key that has the minimal priority or nil when the queue is empty.
  *
  *     q = PriorityQueue.new
@@ -592,7 +592,7 @@ VALUE pq_min_priority(VALUE self) {
 
 /* call-seq:
  *    delete_min -> [key, priority]
- * 
+ *
  * Delete key with minimal priority and return [key, priority]
  *
  *    q = PriorityQueue.new
@@ -611,7 +611,7 @@ VALUE pq_delete_min(VALUE self) {
 
   if (n) {
     rb_hash_delete(hash, n->object); // TODO: Maybe we have a problem here with garbage collection of n->object?
-    return rb_ary_new3(2, n->object, n->priority);  
+    return rb_ary_new3(2, n->object, n->priority);
   } else {
     return Qnil;
   }
@@ -619,7 +619,7 @@ VALUE pq_delete_min(VALUE self) {
 
 /* call-seq:
  *    delete_min_return_key -> key
- * 
+ *
  * Delete key with minimal priority and return the key
  *
  *    q = PriorityQueue.new
@@ -638,7 +638,7 @@ VALUE pq_delete_min_return_key(VALUE self) {
 
   if (n) {
     rb_hash_delete(hash, n->object); // TODO: Maybe we have a problem here with garbage collection of n->object?
-    return n->object;  
+    return n->object;
   } else {
     return Qnil;
   }
@@ -666,7 +666,7 @@ VALUE pq_delete_min_return_priority(VALUE self) {
 
   if (n) {
     rb_hash_delete(hash, n->object); // TODO: Maybe we have a problem here with garbage collection of n->object?
-    return n->priority;  
+    return n->priority;
   } else {
     return Qnil;
   }
@@ -719,7 +719,7 @@ VALUE pq_get_priority(VALUE self, VALUE object) {
   VALUE hash = rb_iv_get(self, "@__node_by_object__");
 
   VALUE node_pointer = rb_hash_aref(hash, object);
-  
+
   if (NIL_P(node_pointer))
     return Qnil;
   else
@@ -729,12 +729,12 @@ VALUE pq_get_priority(VALUE self, VALUE object) {
 /*
  * call-seq:
  *     has_key? key -> boolean
- *     
+ *
  * Return false if the key is not in the queue, true otherwise.
  *
  *     q = PriorityQueue.new
  *     (0..10).each do | i | q[i.to_s] = i end
- *     q.has_key("5") #=> true 
+ *     q.has_key("5") #=> true
  *     q.has_key(5)   #=> false
  */
 static
@@ -742,14 +742,14 @@ VALUE pq_has_key(VALUE self, VALUE object) {
   VALUE hash = rb_iv_get(self, "@__node_by_object__");
 
   VALUE node_pointer = rb_hash_aref(hash, object);
-  
+
   return NIL_P(node_pointer) ? Qfalse : Qtrue;
 }
 /* call-seq:
  *     length -> Fixnum
- * 
+ *
  * Returns the number of elements of the queue.
- * 
+ *
  *     q = PriorityQueue.new
  *     q.length #=> 0
  *     q[0] = 1
@@ -765,10 +765,10 @@ VALUE pq_length(VALUE self) {
 /* call-seq:
  *    delete(key) -> [key, priority]
  *    delete(key) -> nil
- * 
+ *
  * Delete a key from the priority queue. Returns nil when the key was not in
  * the queue and [key, priority] otherwise.
- * 
+ *
  *     q = PriorityQueue.new
  *     (0..10).each do | i | q[i.to_s] = i end
  *     q.delete(5)                               #=> ["5", 5]
@@ -780,8 +780,8 @@ VALUE pq_delete(VALUE self, VALUE object) {
 
   VALUE hash = rb_iv_get(self, "@__node_by_object__");
 
-  VALUE node_pointer = rb_hash_aref(hash, object);  
-  
+  VALUE node_pointer = rb_hash_aref(hash, object);
+
   if (NIL_P(node_pointer))
     return Qnil;
   else {
@@ -800,34 +800,34 @@ VALUE pq_delete(VALUE self, VALUE object) {
 // (I'm not proud of this function ;-( )
 static
 void pq_node2dot(VALUE result_string, priority_node* n, unsigned int level) {
-  if (n == NULL) return;  
+  if (n == NULL) return;
   unsigned int i;
-  for (i=0; i<level; i++) rb_str_cat2(result_string, "  ");  
+  for (i=0; i<level; i++) rb_str_cat2(result_string, "  ");
   if (n->mark)
     rb_str_concat(result_string,
-	rb_funcall(Qnil, id_format, 4, rb_str_new2("NODE%i [label=\"%s (%s)\"];\n"), 
+	rb_funcall(Qnil, id_format, 4, rb_str_new2("NODE%i [label=\"%s (%s)\"];\n"),
 	  ULONG2NUM((unsigned long) n), n->object, n->priority));
   else
     rb_str_concat(result_string,
-	rb_funcall(Qnil, id_format, 4, rb_str_new2("NODE%i [label=\"%s (%s)\",shape=box];\n"), 
+	rb_funcall(Qnil, id_format, 4, rb_str_new2("NODE%i [label=\"%s (%s)\",shape=box];\n"),
 	  ULONG2NUM((unsigned long) n), n->object, n->priority));
   if (n->child != NULL) {
     priority_node* n1 = n->child;
     do {
       pq_node2dot(result_string, n1, level + 1);
-      for (i=0; i<level; i++) rb_str_cat2(result_string, "  ");  
+      for (i=0; i<level; i++) rb_str_cat2(result_string, "  ");
       rb_str_concat(result_string,
-	  rb_funcall(Qnil, id_format, 3, rb_str_new2("NODE%i -> NODE%i;\n"), 
+	  rb_funcall(Qnil, id_format, 3, rb_str_new2("NODE%i -> NODE%i;\n"),
 	    ULONG2NUM((unsigned long) n), ULONG2NUM((unsigned long) n1)));
       n1 = n1->right;
     } while(n1 != n->child);
   }
 }
 
-/* 
+/*
  * Print a priority queue as a dot-graph. The output can be fed to dot from the
  * vizgraph suite to create a tree depicting the internal datastructure.
- * 
+ *
  * (I'm not proud of this function ;-( )
  */
 static
@@ -837,7 +837,7 @@ VALUE pq_to_dot(VALUE self) {
   VALUE result_string = rb_str_new2("digraph fibonacci_heap {\n");
   if (q->rootlist) {
     priority_node* n1 = q->rootlist;
-    do {    
+    do {
       pq_node2dot(result_string, n1, 1);
       n1 = n1->right;
     } while(n1 != q->rootlist);
@@ -884,7 +884,7 @@ VALUE pq_initialize_copy(VALUE copy, VALUE orig) {
     return copy;
 
   rb_iterate(rb_each, orig, pq_insert_node, copy);
-  
+
   return copy;
 }
 
@@ -892,7 +892,7 @@ VALUE pq_initialize_copy(VALUE copy, VALUE orig) {
  * Returns a string representation of the priority queue.
  */
 static
-VALUE pq_inspect(VALUE self) {  
+VALUE pq_inspect(VALUE self) {
   VALUE result = rb_str_new2("<PriorityQueue: ");
   rb_str_concat(result,
       rb_funcall(rb_funcall(self, rb_intern("to_a"), 0),
@@ -903,7 +903,7 @@ VALUE pq_inspect(VALUE self) {
 
 VALUE cPriorityQueue;
 
-/* 
+/*
  * A Priority Queue implementation
  *
  * A priority queue is a queue, where each element (the key) has an assigned
@@ -915,12 +915,12 @@ VALUE cPriorityQueue;
  *
  * The priority queue includes the Enumerable module.
  */
-void Init_CPriorityQueue() {
+void Init_priority_queue() {
   id_compare_operator = rb_intern("<=>");
   id_format = rb_intern("format");
   id_display = rb_intern("display");
 
-  cPriorityQueue = rb_define_class("CPriorityQueue", rb_cObject);
+  cPriorityQueue = rb_define_class("PriorityQueue", rb_cObject);
 
   rb_define_alloc_func(cPriorityQueue, pq_alloc);
   rb_define_method(cPriorityQueue, "initialize", pq_init, 0);

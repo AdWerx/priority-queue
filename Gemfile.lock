@@ -1,0 +1,22 @@
+PATH
+  remote: .
+  specs:
+    priority_queue (0.2.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (13.0.6)
+    rake-compiler (1.1.1)
+      rake
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  priority_queue!
+  rake (>= 1.9.1)
+  rake-compiler (>= 0.8.3)
+
+BUNDLED WITH
+   1.17.2

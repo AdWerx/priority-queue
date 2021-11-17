@@ -15,7 +15,7 @@
 0.1.0
   * API changes
   * Added lots of unit tests
-  * Restructured 
+  * Restructured
   * Fallback to ruby version if c version is not available
   * Added Efficent Pure Ruby Implementation (3 times slower than c version in
     dijkstras algorithm)

@@ -2,21 +2,14 @@
 
 # Priority Queue tests
 
-$:.unshift '../ext/priority_queue/CPriorityQueue'
+$:.unshift '../ext/priority_queue'
 $:.unshift '../lib/'
 
 require 'test/unit'
 
-require 'priority_queue/ruby_priority_queue'
-require 'priority_queue/poor_priority_queue'
-begin
-  require 'priority_queue/CPriorityQueue' 
-rescue LoadError
-  require 'CPriorityQueue'
-end
+require 'priority_queue/priority_queue'
 
-
-module PriorityQueueTest    
+module PriorityQueueTestHelper
   # Check that the order is maintained
   def teardown
     last = @q.min_priority
@@ -101,7 +94,7 @@ module PriorityQueueTest
     20.times do | i |
       @q.push i, i
     end
-    
+
     20.times do | i |
       assert_equal([i, i], @q.delete_min)
     end
@@ -265,13 +258,13 @@ module PriorityQueueTest
 end
 
 class CPriorityQueueTest < Test::Unit::TestCase
-  include PriorityQueueTest
+  include PriorityQueueTestHelper
 
   def setup
-    @q = CPriorityQueue.new
+    @q = PriorityQueue.new
   end
 
-  def test_to_dot    
+  def test_to_dot
     5.times do | i |
       @q.push "N#{i}", i
     end
@@ -289,83 +282,3 @@ class CPriorityQueueTest < Test::Unit::TestCase
   end
 
 end
-
-class PoorPriorityQueueTest < Test::Unit::TestCase
-  include PriorityQueueTest
-
-  def setup
-    @q = PoorPriorityQueue.new
-  end
-
-end
-
-class RubyPriorityQueueTest < Test::Unit::TestCase
-  include PriorityQueueTest
-
-  def setup
-    @q = RubyPriorityQueue.new
-  end
-
-  def test_private_link_nodes
-    q = RubyPriorityQueue.new
-    q[0] = 0
-    q[1] = 1
-    tc = self
-    q.instance_eval do
-      n0 = @nodes[0]
-      n1 = @nodes[1]
-      n0.right = n0.left = n0
-      n1.right = n1.left = n1
-      tc.assert_equal(n0, link_nodes(n0, n1))
-      tc.assert_equal(n0.child, n1)
-      tc.assert_equal(n1.child, nil)
-      tc.assert_equal(n0.left, n0)
-      tc.assert_equal(n1.left, n1)
-      tc.assert_equal(n0.right, n0)
-      tc.assert_equal(n1.right, n1)
-    end
-    q = RubyPriorityQueue.new
-    q[0] = 0
-    q[1] = 1
-    q.instance_eval do
-      n0 = @nodes[0]
-      n1 = @nodes[1]
-      n0.right = n0.left = n0
-      n1.right = n1.left = n1
-      tc.assert_equal(n0, link_nodes(n1, n0))
-      tc.assert_equal(n0.child, n1)
-      tc.assert_equal(n1.child, nil)
-      tc.assert_equal(n0.left, n0)
-      tc.assert_equal(n1.left, n1)
-      tc.assert_equal(n0.right, n0)
-      tc.assert_equal(n1.right, n1)
-    end
-  end
-
-
-  def test_private_delete_first
-    q = RubyPriorityQueue.new
-    q[0] = 0
-    q[1] = 1
-    q[2] = 2
-    tc = self
-    q.instance_eval do
-      2.times do
-	r = @rootlist
-	tc.assert_equal(r, delete_first)
-	tc.assert_equal(r.right, r)
-	tc.assert_equal(r.left, r)
-	tc.assert_not_equal(r, @rootlist.left)
-	tc.assert_not_equal(r, @rootlist.right)
-      end
-      r = @rootlist
-      tc.assert_equal(r, delete_first)
-      tc.assert_equal(r.right, r)
-      tc.assert_equal(r.left, r)
-      tc.assert_equal(nil, @rootlist)
-
-      tc.assert_equal(nil, delete_first)
-    end
-  end
-end
-
