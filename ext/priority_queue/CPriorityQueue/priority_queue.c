@@ -5,7 +5,7 @@
  * 
  * This is a fibonacci heap priority queue implementation.
  *
- * (c) 2005 Brian Schröder
+ * (c) 2005 Brian SchrÃ¶der
  * 
  * Please submit bugreports to priority_queue@brian-schroeder.de
  *
@@ -285,7 +285,7 @@ priority_node* priority_queue_delete_min(priority_queue* q) {
 	n = n->right;
       } while (n!=min->child);
 
-      // Kinder einfügen
+      // Kinder einfÃ¼gen
       if (q->rootlist) {
 	priority_node* const l1 = q->rootlist->left;
 	priority_node* const l2 = n->left;
@@ -299,10 +299,10 @@ priority_node* priority_queue_delete_min(priority_queue* q) {
       }
     }
 
-    // Größe anpassen
+    // GrÃ¶ÃŸe anpassen
     q->length = length-1;
 
-    // Wieder aufhübschen
+    // Wieder aufhÃ¼bschen
     consolidate_queue(q);
   }
 
@@ -817,7 +817,7 @@ void pq_node2dot(VALUE result_string, priority_node* n, unsigned int level) {
       pq_node2dot(result_string, n1, level + 1);
       for (i=0; i<level; i++) rb_str_cat2(result_string, "  ");  
       rb_str_concat(result_string,
-	  rb_funcall(Qnil, id_format, 4, rb_str_new2("NODE%i -> NODE%i;\n"), 
+	  rb_funcall(Qnil, id_format, 3, rb_str_new2("NODE%i -> NODE%i;\n"), 
 	    ULONG2NUM((unsigned long) n), ULONG2NUM((unsigned long) n1)));
       n1 = n1->right;
     } while(n1 != n->child);
