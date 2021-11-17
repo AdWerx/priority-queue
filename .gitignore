@@ -2,3 +2,7 @@ vendor
 tmp
 .DS_Store
 *.gem
+*.so
+*.o
+*.a
+mkmf.log

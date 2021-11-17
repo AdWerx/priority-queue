@@ -1,3 +1,3 @@
 # A priority queue implementation.
 
-require 'priority_queue/priority_queue'
+require_relative 'priority_queue/priority_queue'
