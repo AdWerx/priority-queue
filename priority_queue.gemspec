@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'priority_queue'
-  spec.version       = '0.2.0'
+  spec.version       = '0.2.1'
   spec.authors       = ['Brian Schröder']
   spec.email         = ['priority_queue@brian-schroeder.de']
 
