@@ -1,2 +1,2 @@
 require 'mkmf'
-create_makefile('priority_queue')
+create_makefile('priority_queue/priority_queue')
